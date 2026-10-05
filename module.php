@@ -26,4 +26,7 @@ return [
             );
         },
     ],
+    'singletons' => [
+        ConfigRepositoryInterface::class,
+    ],
 ];
