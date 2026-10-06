@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Marko\Config;
 
 use Marko\Config\Exceptions\ConfigLoadException;
+use Marko\Core\Exceptions\MarkoException;
 use ParseError;
 
 readonly class ConfigLoader
@@ -31,6 +32,8 @@ readonly class ConfigLoader
                 message: 'Configuration file contains invalid PHP syntax',
                 previous: $e,
             );
+        } catch (MarkoException $e) {
+            throw ConfigLoadException::fromFileFailure($filePath, $e);
         }
 
         if (!is_array($config)) {
