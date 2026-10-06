@@ -83,6 +83,39 @@ it('throws ConfigException on type mismatch', function () {
         ->toThrow(ConfigException::class);
 });
 
+it('returns false from getBool for the false tokens off, no, false and 0', function (mixed $value) {
+    $config = new ConfigRepository(['flag' => $value]);
+
+    expect($config->getBool('flag'))->toBeFalse();
+})->with(['off', 'no', 'false', '0', 'OFF', 0, false]);
+
+it('returns true from getBool for the true tokens on, yes, true and 1', function (mixed $value) {
+    $config = new ConfigRepository(['flag' => $value]);
+
+    expect($config->getBool('flag'))->toBeTrue();
+})->with(['on', 'yes', 'true', '1', 'Yes', 1, true]);
+
+it('throws from getBool for a value that is not a boolean token', function (mixed $value) {
+    $config = new ConfigRepository(['flag' => $value]);
+
+    expect(fn () => $config->getBool('flag'))
+        ->toThrow(ConfigException::class, 'Configuration key "flag" is not a boolean');
+})->with(['ture', 'enabled', '', 2, 1.0]);
+
+it('returns an int from getInt for an integer string', function () {
+    $config = new ConfigRepository(['port' => '8080', 'offset' => '-5']);
+
+    expect($config->getInt('port'))->toBe(8080)
+        ->and($config->getInt('offset'))->toBe(-5);
+});
+
+it('throws from getInt for a value that is not a whole number', function (mixed $value) {
+    $config = new ConfigRepository(['port' => $value]);
+
+    expect(fn () => $config->getInt('port'))
+        ->toThrow(ConfigException::class, 'Configuration key "port" is not an integer');
+})->with(['1.5', '1e3', '10s', 1.5, true]);
+
 it('throws ConfigNotFoundException when getString is called with missing key', function () {
     $config = new ConfigRepository(['name' => 'Marko']);
 

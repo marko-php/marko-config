@@ -134,17 +134,7 @@ readonly class ConfigRepository implements ConfigRepositoryInterface
         string $key,
         ?string $scope = null,
     ): int {
-        $value = $this->get($key, $scope);
-
-        if (!is_numeric($value)) {
-            throw new ConfigException(
-                sprintf('Configuration key "%s" is not an integer', $key),
-                sprintf('Expected integer, got %s', get_debug_type($value)),
-                'Ensure your config file returns an integer for this key.',
-            );
-        }
-
-        return (int) $value;
+        return ConfigValue::toInt($key, $this->get($key, $scope));
     }
 
     /**
@@ -154,17 +144,7 @@ readonly class ConfigRepository implements ConfigRepositoryInterface
         string $key,
         ?string $scope = null,
     ): bool {
-        $value = $this->get($key, $scope);
-
-        if (!is_scalar($value)) {
-            throw new ConfigException(
-                sprintf('Configuration key "%s" is not a boolean', $key),
-                sprintf('Expected boolean, got %s', get_debug_type($value)),
-                'Ensure your config file returns a boolean for this key.',
-            );
-        }
-
-        return (bool) $value;
+        return ConfigValue::toBool($key, $this->get($key, $scope));
     }
 
     /**
